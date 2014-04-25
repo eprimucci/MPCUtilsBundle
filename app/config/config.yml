@@ -67,3 +67,9 @@ swiftmailer:
     username:  "%mailer_user%"
     password:  "%mailer_password%"
     spool:     { type: memory }
+
+
+services:
+    mpcbundle.mpcresources:    
+        class: CodigoAustral\MPCUtilsBundle\Service\MpcResourcesService
+        arguments: ["@doctrine.orm.entity_manager", "@logger", "%mpc.downloads-folder%", "%mpc.pha-long.url%"]
