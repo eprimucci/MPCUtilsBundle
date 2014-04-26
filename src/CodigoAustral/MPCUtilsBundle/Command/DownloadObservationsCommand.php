@@ -25,7 +25,7 @@ class DownloadObservationsCommand extends ContainerAwareCommand {
         
         
         try {
-            $service->getObservations('X38');
+            $service->getObservations('Z96');
         }
         catch(\Exception $e) {
             $output->writeln($e->getMessage());

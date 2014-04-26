@@ -68,7 +68,14 @@ class MpcResourcesService {
         
         
         $targetFile=$this->downloadsFolder . DIRECTORY_SEPARATOR . "observations-{$observatoryCode}.dat";
+        
+        
+        // this url will not be available until we query via web form (it is created on the fly...)
         $url="http://www.minorplanetcenter.net/tmp/1500-01-01--2099-12-31--{$observatoryCode}.dat";
+        
+        @fopen("http://www.minorplanetcenter.net/db_search/show_by_date?utf8=%E2%9C%93&start_date=&end_date=&observatory_code={$observatoryCode}&obj_type=all", 'r');
+        
+        // now hit the url
         
         if(file_exists($targetFile)) {
             $bytesRead = filesize($targetFile);
