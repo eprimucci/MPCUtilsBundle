@@ -3,8 +3,9 @@
 namespace CodigoAustral\MPCUtilsBundle\Service;
 
 use Doctrine\Common\Persistence\ObjectManager;
-
 use Monolog\Logger;
+
+use CodigoAustral\MPCUtilsBundle\Service\ObservationsParser;
 
 class MpcResourcesService {
 
@@ -61,7 +62,50 @@ class MpcResourcesService {
 
     
     
-    
+    public function getObservations($observatoryCode) {
+        
+        
+        
+        $targetFile=$this->downloadsFolder . DIRECTORY_SEPARATOR . "observations-{$observatoryCode}.dat";
+        $url="http://www.minorplanetcenter.net/tmp/1500-01-01--2099-12-31--{$observatoryCode}.dat";
+        
+        if(file_exists($targetFile)) {
+            $bytesRead = filesize($targetFile);
+            $this->logger->info("Read {$bytesRead} bytes from local resource {$targetFile}");
+        }
+        else {
+            $bytesRead = file_put_contents($targetFile, fopen($url, 'r'));
+            if($bytesRead===false) {
+                $message='Unable to download contents from: '.$this->mpcPHAurl;
+                $this->logger->err($message);
+                throw new \Exception($message);
+            }
+            $this->logger->info("Downloaded {$bytesRead} bytes from resource {$this->mpcPHAurl}");
+        }
+
+        // now parse it according to MPC instructions:
+        
+        
+        $handle = fopen($targetFile, "r");
+        if ($handle) {
+            $parser=new ObservationsParser();
+            
+            while (($line = fgets($handle)) !== false) {
+                $pepe=var_export($parser->parseLine($line),true);
+                $this->logger->info($pepe);
+            }
+        } 
+        else {
+            // error opening the file.
+        } 
+        fclose($handle);
+        
+        
+        
+        
+        
+        
+    }
     
     
     
@@ -80,6 +124,9 @@ class MpcResourcesService {
     }
 
 
+    
+    
+    
     
     
     
