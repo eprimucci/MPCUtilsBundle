@@ -6,6 +6,7 @@ use Doctrine\Common\Persistence\ObjectManager;
 use Monolog\Logger;
 
 use CodigoAustral\MPCUtilsBundle\Service\ObservationsParser;
+use CodigoAustral\MPCUtilsBundle\Service\ParsedObservation;
 
 class MpcResourcesService {
 
@@ -90,10 +91,27 @@ class MpcResourcesService {
         if ($handle) {
             $parser=new ObservationsParser();
             
+            
+            $types=array('total'=>0);
+            
             while (($line = fgets($handle)) !== false) {
-                $pepe=var_export($parser->parseLine($line),true);
-                $this->logger->info($pepe);
+                /* @var $p ParsedObservation */
+                $p=$parser->parseLine($line);
+                
+                $type=$p->getType();
+                
+                if(array_key_exists($type, $types)) {
+                    $types[$type]=$types[$type]+1;
+                }
+                else {
+                    $types[$type]=1;
+                }
+                $types['total']++;
+                
+                $this->logger->info("TYPE:--{$p->getType()}--{$p->reconstruct()}--");
             }
+            
+            $this->logger->info(var_export($types, true));
         } 
         else {
             // error opening the file.
