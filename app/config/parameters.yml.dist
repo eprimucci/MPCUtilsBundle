@@ -13,3 +13,6 @@ parameters:
 
     locale:            en
     secret:            ThisTokenIsNotSoSecretChangeIt
+
+    mpc.downloads-folder: /home/piri/projects/MPCUtilsBundle/downloaded-resources
+    mpc.pha-long.url: http://www.minorplanetcenter.net/iau/lists/PHACloseApp.html

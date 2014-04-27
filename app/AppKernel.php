@@ -19,6 +19,35 @@ class AppKernel extends Kernel
             
             new CodigoAustral\MPCUtilsBundle\CodigoAustralMPCUtilsBundle(),
             
+            // doctrine migrations and fixtures
+            new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle(),
+            new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle(),
+            
+            // Bootstrap, Sass, KnpMenus and paginator
+            new Mopa\Bundle\BootstrapBundle\MopaBootstrapBundle(),
+            new Knp\Bundle\MenuBundle\KnpMenuBundle(),
+            new Knp\Bundle\PaginatorBundle\KnpPaginatorBundle(),
+            new Craue\FormFlowBundle\CraueFormFlowBundle(),
+            new Mopa\Bundle\BootstrapSandboxBundle\MopaBootstrapSandboxBundle(),
+            new Liip\ThemeBundle\LiipThemeBundle(),
+            
+            // QRcode
+            new Endroid\Bundle\QrCodeBundle\EndroidQrCodeBundle(),
+            
+            // JMS Di (dependency injection extras)
+            new JMS\DiExtraBundle\JMSDiExtraBundle($this),
+            new JMS\AopBundle\JMSAopBundle(),
+            
+            // JMS Security extra-bundles (good for all JMS)
+            new JMS\SecurityExtraBundle\JMSSecurityExtraBundle(),
+            
+            // jquery routing
+            new FOS\JsRoutingBundle\FOSJsRoutingBundle(),
+            
+            // PDFs
+            new Siphoc\PdfBundle\SiphocPdfBundle(),
+            
+            
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {
