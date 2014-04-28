@@ -19,37 +19,31 @@ class Usuario extends BaseUser {
     protected $id;
     
     /**
-     * @ORM\Column(name="apellido", type="string", length=255, nullable=true)
+     * @ORM\Column(name="last_name", type="string", length=255, nullable=true)
      */
-    protected $apellido;
+    protected $lastName;
     
     /**
-     * @ORM\Column(name="nombre", type="string", length=255, nullable=true)
+     * @ORM\Column(name="first_name", type="string", length=255, nullable=true)
      */
-    protected $nombre;
+    protected $firstName;
     
-            
-
-    public function __construct() {
-        parent::__construct();
-        // your own logic
-    }
-    
-    
-    public function getApellido() {
-        return $this->apellido;
+    public function getLastName() {
+        return $this->lastName;
     }
 
-    public function setApellido($apellido) {
-        $this->apellido = $apellido;
+    public function getFirstName() {
+        return $this->firstName;
     }
 
-    public function getNombre() {
-        return $this->nombre;
+    public function setLastName($lastName) {
+        $this->lastName = $lastName;
+        return $this;
     }
 
-    public function setNombre($nombre) {
-        $this->nombre = $nombre;
+    public function setFirstName($firstName) {
+        $this->firstName = $firstName;
+        return $this;
     }
 
 
