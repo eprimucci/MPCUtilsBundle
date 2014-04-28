@@ -58,13 +58,14 @@ class ImportObservatoriesCommand extends ContainerAwareCommand {
                 $o->setName($obs['name']);
                 $o->setSin($obs['sin']);
                 $em->persist($o);
-                $em->flush();
             }
             
         }
         catch(\Exception $e) {
             $output->writeln($e->getMessage());
         }
+        
+        $em->flush();
         
         
     }
