@@ -23,6 +23,9 @@ class AppKernel extends Kernel
             new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle(),
             new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle(),
             
+            // Users from a trusted source
+            new FOS\UserBundle\FOSUserBundle(),
+            
             // Bootstrap, Sass, KnpMenus and paginator
             new Mopa\Bundle\BootstrapBundle\MopaBootstrapBundle(),
             new Knp\Bundle\MenuBundle\KnpMenuBundle(),

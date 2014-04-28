@@ -109,3 +109,31 @@ siphoc_pdf:
     options:
         'lowquality': false
         'debug-javascript': true
+
+
+fos_user:
+    db_driver: orm # other valid values are 'mongodb', 'couchdb' and 'propel'
+    firewall_name: main
+    user_class: CodigoAustral\MPCUtilsBundle\Entity\User
+    registration:
+        confirmation:
+            from_email:
+                address:        pruebas@codigoaustral.com
+                sender_name:    MPCUtils Bundle
+        form:
+            type: mpcbundle_user_registration
+            
+    profile:
+        form:
+            type: mpcbundle_user_profile
+            name: edit_my_profile
+    
+    from_email:
+        address:        pruebas@codigoaustral.com
+        sender_name:    MPCUtils Bundle
+    
+    resetting:
+        email:
+            from_email:
+                address:        pruebas@codigoaustral.com
+                sender_name:    MPCUtils Bundle Password Resetting
