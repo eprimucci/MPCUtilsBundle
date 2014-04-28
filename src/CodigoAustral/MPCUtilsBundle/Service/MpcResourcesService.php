@@ -37,46 +37,17 @@ class MpcResourcesService {
 
 
     
-    public function downloadLongPHAlist() {
-        
-        
-        // TODO: verify it is not already here...
-        
-
-        
-        
-        // get the resource
-        $bytesRead = file_put_contents($this->downloadsFolder . DIRECTORY_SEPARATOR . "longpha.html", fopen($this->mpcPHAurl, 'r'));
-        if($bytesRead===false) {
-            $message='Unable to download contents from: '.$this->mpcPHAurl;
-            $this->logger->err($message);
-            throw new \Exception($message);
-        }
-        
-        // 
-        $this->logger->info("Downloaded {$bytesRead} bytes from resource {$this->mpcPHAurl}");
-        
-        return array('bytes'=>$bytesRead, 'url'=>$this->mpcPHAurl);
-    }
-
-    
-
-    
-    
     public function getObservations($observatoryCode) {
         
-        
-        
         $targetFile=$this->downloadsFolder . DIRECTORY_SEPARATOR . "observations-{$observatoryCode}.dat";
-        
         
         // this url will not be available until we query via web form (it is created on the fly...)
         $url="http://www.minorplanetcenter.net/tmp/1500-01-01--2099-12-31--{$observatoryCode}.dat";
         
+        // prime it...
         @fopen("http://www.minorplanetcenter.net/db_search/show_by_date?utf8=%E2%9C%93&start_date=&end_date=&observatory_code={$observatoryCode}&obj_type=all", 'r');
         
         // now hit the url
-        
         if(file_exists($targetFile)) {
             $bytesRead = filesize($targetFile);
             $this->logger->info("Read {$bytesRead} bytes from local resource {$targetFile}");
@@ -92,8 +63,6 @@ class MpcResourcesService {
         }
 
         // now parse it according to MPC instructions:
-        
-        
         $handle = fopen($targetFile, "r");
         if ($handle) {
             $parser=new ObservationsParser();
@@ -124,12 +93,6 @@ class MpcResourcesService {
             // error opening the file.
         } 
         fclose($handle);
-        
-        
-        
-        
-        
-        
     }
     
     
