@@ -9,25 +9,28 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 use CodigoAustral\MPCUtilsBundle\Service\MpcResourcesService;
 
-class UpdatePHACommand extends ContainerAwareCommand {
+class ImportObservatoriesCommand extends ContainerAwareCommand {
 
     protected function configure() {
-        $this->setName('mpc:download:pha')
-                ->setDescription('Downloads the MPC Potential Hazardous Asteroids list into the local file repo');
+        $this->setName('mpc:download:observatories')
+                ->setDescription('Imports observatories from the list published by MPC. Only for new installs!');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output) {
+        
+        // get the PHA web page from parameters file
         
         /* @var $service MpcResourcesService */
         $service=$this->getContainer()->get('mpcbundle.mpcresources');
         
         try {
-            $result=$service->downloadLongPHAlist();
-            $output->writeln("Downloaded {$result['bytes']} bytes from resource {$result['url']}");
+            $obs=$service->getObservatories();
+            var_dump($obs);
         }
         catch(\Exception $e) {
             $output->writeln($e->getMessage());
         }
+        
         
     }
 

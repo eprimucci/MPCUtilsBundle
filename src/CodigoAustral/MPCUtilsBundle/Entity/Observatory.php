@@ -40,23 +40,23 @@ class Observatory {
     /**
      * @var float
      *
-     * @ORM\Column(name="longitude", type="decimal", precision=10, scale=6, nullable=false)
+     * @ORM\Column(name="longitude", type="decimal", precision=10, scale=6, nullable=true)
      */
     private $longitude;
 
     /**
      * @var float
      *
-     * @ORM\Column(name="cosine", type="decimal", precision=10, scale=6, nullable=false)
+     * @ORM\Column(name="cosval", type="decimal", precision=10, scale=6, nullable=true)
      */
-    private $cosine;
+    private $cos;
 
     /**
      * @var float
      *
-     * @ORM\Column(name="sine", type="decimal", precision=10, scale=6, nullable=false)
+     * @ORM\Column(name="sinval", type="decimal", precision=10, scale=6, nullable=true)
      */
-    private $sine;
+    private $sin;
 
     
     public function getId() {
@@ -75,12 +75,12 @@ class Observatory {
         return $this->longitude;
     }
 
-    public function getCosine() {
-        return $this->cosine;
+    public function getCos() {
+        return $this->cos;
     }
 
-    public function getSine() {
-        return $this->sine;
+    public function getSin() {
+        return $this->sin;
     }
 
     public function setId($id) {
@@ -103,18 +103,21 @@ class Observatory {
         return $this;
     }
 
-    public function setCosine($cosine) {
-        $this->cosine = $cosine;
+    public function setCos($cos) {
+        $this->cos = $cos;
         return $this;
     }
 
-    public function setSine($sine) {
-        $this->sine = $sine;
+    public function setSin($sin) {
+        $this->sin = $sin;
         return $this;
     }
 
 
-    
+    public function __toString() {
+        return $this->code.'-'.$this->name;
+    }
+
     
 
 }

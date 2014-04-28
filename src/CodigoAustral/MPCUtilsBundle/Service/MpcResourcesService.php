@@ -7,6 +7,7 @@ use Monolog\Logger;
 
 use CodigoAustral\MPCUtilsBundle\Service\ObservationsParser;
 use CodigoAustral\MPCUtilsBundle\Service\ParsedObservation;
+use CodigoAustral\MPCUtilsBundle\Service\ObservatoryParser;
 
 class MpcResourcesService {
 
@@ -28,6 +29,7 @@ class MpcResourcesService {
     
     protected $mpcPHAurl;
     
+
     function __construct(ObjectManager $om, Logger $logger, $downloadsFolder, $mpcPHAurl) {
         $this->om = $om;
         $this->logger = $logger;
@@ -96,6 +98,50 @@ class MpcResourcesService {
     }
     
     
+    public function getObservatories() {
+        
+        $targetFile=$this->downloadsFolder . DIRECTORY_SEPARATOR . "observatories.txt";
+        
+        $url='http://www.minorplanetcenter.net/iau/lists/ObsCodes.html';
+
+        if(file_exists($targetFile)) {
+            $bytesRead = filesize($targetFile);
+            $this->logger->info("Read {$bytesRead} bytes from local resource {$targetFile}");
+        }
+        else {
+            $bytesRead = file_put_contents($targetFile, fopen($url, 'r'));
+            if($bytesRead===false) {
+                $message='Unable to download contents from: '.$url;
+                $this->logger->err($message);
+                throw new \Exception($message);
+            }
+            $this->logger->info("Downloaded {$bytesRead} bytes from resource {$url}");
+        }
+
+        // now parse it according to MPC instructions:
+        $handle = fopen($targetFile, "r");
+        if ($handle) {
+            $parser=new ObservatoryParser();
+            
+            $obs=array();
+            
+            while (($line = fgets($handle)) !== false) {
+                /* @var $p ParsedObservation */
+                if(substr($line, 0,1)=='<' || substr($line, 0,4)=='Code') {
+                    continue;
+                }
+                
+                
+                $obs[]=$parser->parseLine($line);
+            }
+            $this->logger->info('Parsed '.count($obs).' records.');
+        } 
+        else {
+            // error opening the file.
+        } 
+        fclose($handle);
+        return $obs;
+    }
     
     
     
