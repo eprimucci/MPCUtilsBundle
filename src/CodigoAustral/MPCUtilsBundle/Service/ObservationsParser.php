@@ -10,7 +10,7 @@ use CodigoAustral\MPCUtilsBundle\Service\ParsedObservation;
  *
  * @author piri
  */
-class ObservationsParser {
+class ObservationsParser implements Parseable {
 
     
     
@@ -126,5 +126,8 @@ class ObservationsParser {
         
     }
 
+    public function parseDocument($document) {
+        throw new \Exception('not implemented');
+   }
 
 }

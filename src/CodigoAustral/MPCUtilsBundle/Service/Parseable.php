@@ -11,5 +11,7 @@ interface Parseable {
     
     public function parseLine($line);
     
+    public function parseDocument($document);
+    
     
 }
