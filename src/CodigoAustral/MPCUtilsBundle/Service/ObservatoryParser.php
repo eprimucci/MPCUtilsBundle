@@ -15,7 +15,7 @@ class ObservatoryParser implements Parseable {
     
     
     public function parseDocument($document) {
-        
+        throw new \Exception('Not implemented');
     }
 
     public function parseLine($line) {
@@ -43,14 +43,14 @@ C51                           WISE
         $sin=(substr($line, 21, 9));
         
         if(trim($long)=='') {
-            $long=null;
+            $long='null';
         }
         else {
             $long=  floatval($long);
         }
 
         if(trim($cos)=='') {
-            $cos=null;
+            $cos='null';
         }
         else {
             $cos=  floatval($cos);
@@ -58,7 +58,7 @@ C51                           WISE
 
         
         if(trim($sin)=='') {
-            $sin=null;
+            $sin='null';
         }
         else {
             $sin=  floatval($sin);

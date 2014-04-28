@@ -39,6 +39,15 @@ class MpcResourcesService {
 
 
     
+    
+    /**
+     * Downloads complete set of observations for the given Observatory code unless
+     * we have a local copy. Parses data and performs simple stats.
+     * Some observatories could observe thousands or millions that is why I only return stats now.
+     * @param type $observatoryCode
+     * @return type Array
+     * @throws \Exception
+     */
     public function getObservations($observatoryCode) {
         
         $targetFile=$this->downloadsFolder . DIRECTORY_SEPARATOR . "observations-{$observatoryCode}.dat";
@@ -69,7 +78,6 @@ class MpcResourcesService {
         if ($handle) {
             $parser=new ObservationsParser();
             
-            
             $types=array('total'=>0);
             
             while (($line = fgets($handle)) !== false) {
@@ -88,16 +96,24 @@ class MpcResourcesService {
                 
                 $this->logger->info("TYPE:--{$p->getType()}--{$p->reconstruct()}--");
             }
-            
-            $this->logger->info(var_export($types, true));
         } 
         else {
             // error opening the file.
         } 
         fclose($handle);
+        
+        return $types;
     }
     
     
+    
+    /**
+     * Downloads latest observatories file from MPC unless we have a local copy.
+     * Parses every line returning an array.
+     * Lon, Cos and Sin and returned as floats. Null for spaceborn scopes.
+     * @return type
+     * @throws \Exception
+     */
     public function getObservatories() {
         
         $targetFile=$this->downloadsFolder . DIRECTORY_SEPARATOR . "observatories.txt";
@@ -131,8 +147,8 @@ class MpcResourcesService {
                     continue;
                 }
                 
-                
                 $obs[]=$parser->parseLine($line);
+
             }
             $this->logger->info('Parsed '.count($obs).' records.');
         } 
@@ -142,10 +158,6 @@ class MpcResourcesService {
         fclose($handle);
         return $obs;
     }
-    
-    
-    
-    
     
     
     
