@@ -29,5 +29,5 @@ MopaBootstrapSandbox:
     resource: "@MopaBootstrapSandboxBundle/Resources/config/routing.yml"    
     
 MPCUtilsBundle:
-    resource: "@MPCUtilsBundle/Resources/config/routing.yml"
+    resource: "@CodigoAustralMPCUtilsBundle/Resources/config/routing.yml"
     prefix:   /

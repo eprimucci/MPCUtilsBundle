@@ -1,5 +1,5 @@
-frontstats:
-    resource: "@CodigoAustralMPCUtilsBundle/Controller/StatsController.php"
+mpc:
+    resource: "@CodigoAustralMPCUtilsBundle/Controller/MPCController.php"
     type:     annotation
 
         

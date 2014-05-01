@@ -1,0 +1,242 @@
+*{
+    padding: 0;
+    margin: 0;
+}
+
+body{
+    background-color: #f9f9f9;
+    font-family: sans-serif;
+    font-size: 16px;
+    line-height: 19px;
+}
+
+a{
+    color: #08c;
+    text-decoration: none;
+}
+
+a:hover{
+    color: #005580;
+    text-decoration: underline;
+}
+
+#header-wrapper{
+    height: 62px;
+    background-color: #058fd2;
+    background-image: url(../img/main-header.png);
+    background-repeat: repeat-x;
+    background-position: top;
+}
+#header{
+    height: 62px;
+    width: 960px;
+    margin: 0 auto;
+}
+#logo{
+    float: left;
+    height: 50px;
+    width: 270px;
+    padding-top: 5px;
+}
+#logo a{
+    float: left;
+    height: 50px;
+    width: 270px;
+    background-image: url(../img/newlogos/logo-tick-main.png);
+    background-repeat: no-repeat;
+    background-position: left top;
+    text-decoration: none;
+}
+#main-navigation{
+    float: left;
+    padding-top: 10px;
+}
+#main-navigation li{
+    display: inline;
+    float: left;
+    list-style: none;
+    padding-right: 15px;
+}
+#main-navigation li a{
+    float: left;
+    padding: 8px;
+    color: White;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+#main-navigation li.active a, #main-navigation li a:hover{
+    text-decoration: none;
+    background-color: #005791;
+}
+
+#user-buttons{
+    float: right;
+    padding-top: 10px;
+}
+#user-buttons li{
+    float: left;
+    display: inline;
+    margin-left: 5px;
+}
+#user-buttons li a{
+    float: left;
+    color: #333;
+    border: 1px solid #14638d;
+    padding: 8px 12px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    text-shadow: 0px 1px 1px #fff;
+    background-repeat: repeat-x;
+    background-position: top;
+}
+#user-buttons li a:hover{
+    text-decoration: none;
+    background-position: bottom;
+}
+#user-buttons li.signup a{
+    box-shadow: inset 0px 1px 1px 0px #fff6cb;
+    -webkit-box-shadow: inset 0px 1px 1px 0px #fff6cb;
+    background-color: #ffba11;
+    background-image: url(../img/main-signup-button.png);
+}
+#user-buttons li.login a{
+    box-shadow: inset 0px 1px 1px 1px #fff;
+    -webkit-box-shadow: inset 0px 1px 1px 1px #fff;
+    background-color: #c7c7c7;
+    background-image: url(../img/main-login-button.png);
+}
+
+#middle{
+    width: 960px;
+    margin: 0 auto;
+}
+#main{
+    padding: 40px 0 100px 0;
+}
+#main h1{
+    font-size: 60px;
+    margin-bottom: 40px;
+    margin-top: 40px;
+    font-weight: normal;
+}
+#main h2{
+   font-size: 30px;
+   font-weight: normal;
+   margin: 60px 0 40px 0;
+   line-height: 40px; 
+}
+#main h3{
+    margin-top: 15px;
+    font-size: 16px;
+    font-weight: bold;
+}
+p{
+    margin-bottom: 15px;
+}
+ul, ol{
+    padding: 20px 30px;
+}
+ul li, ol li{
+    margin-bottom: 5px;
+}
+
+
+#footer-wrapper{
+    background-color: #4aa3e0;
+    background-image: url(../img/main-footer.png);
+    background-position: top;
+    background-repeat: repeat-x;
+}
+#footer{
+    width: 960px;
+    margin: 0 auto;
+    padding-top: 115px;
+    color: White;
+}
+#sitemap{
+    overflow: hidden;
+    height: 100%;
+    padding-bottom: 60px;
+}
+#sitemap .column{
+    float: left;
+    width: 220px;
+    padding-right: 20px;
+}
+#sitemap .column h2{
+    margin-bottom: 15px;
+    font-size: 20px;
+    text-shadow: 0px 1px 1px #005791
+}
+#sitemap .column ul li{
+    display: block;
+    line-height: 26px;
+    font-size: 16px;
+}
+#sitemap .column ul li a{
+    color: white;
+}
+#sitemap .column ul li a:hover{
+    text-decoration: underline;
+}
+#copyright{
+    font-size: 13px;
+    color: #c3e6f8;
+    font-style: normal;
+    padding-bottom: 60px; 
+}
+
+/* Login & Forms */
+
+.btn{
+    text-shadow: 0px 1px 2px #666;
+    padding: 7px 17px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.btn-primary{
+    background-color: #0045cc;
+    border: 1px solid #0061b7;
+    font-size: 13px;
+    color: White;
+    background-image: url(../img/login-button.png);
+    background-repeat: repeat-x;
+    background-position: top;
+}
+.btn-primary:hover{
+    background-position: bottom;
+}
+
+.form-horizontal fieldset{
+    padding: 30px 0;
+    border: 0 none;
+}
+.form-horizontal .form-group{
+    overflow: hidden;
+    height: 100%;
+    margin-bottom: 15px;
+    
+}
+.form-horizontal .form-group label{
+    float: left;
+    width: 40%;
+    padding-right: 15px;
+    text-align: right;
+    cursor: pointer;
+    padding-top: 2px;
+}
+.form-horizontal .form-group input{
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    width: 283px;
+    font-size: 15px;
+    padding: 4px;
+    font-weight: normal;
+    -webkit-box-shadow: inset 1px 1px 0px 1px #e0e0e0;
+    border: 1px solid #a1a1a1;
+}
+.form-horizontal .col-lg-4{
+    margin-left: 40%;
+    padding-left: 15px;
+}

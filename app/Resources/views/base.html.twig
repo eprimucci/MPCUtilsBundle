@@ -1,13 +1,97 @@
+{% from 'MopaBootstrapBundle::flash.html.twig' import session_flash %}
+
 <!DOCTYPE html>
+{% block html_tag %}
 <html>
-    <head>
-        <meta charset="UTF-8" />
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        {% block stylesheets %}{% endblock %}
-        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
-    </head>
+{% endblock html_tag %}
+
+{% block head %}
+<head>
+    <meta charset="UTF-8" />
+    
+    <meta http-equiv="content-type" content="text/html; utf-8" />
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />        
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>{% block meta_title %}Inspectables{% endblock %}</title>
+
+    {% block head_style %}
+        {% stylesheets
+            '@MopaBootstrapBundle/Resources/public/less/mopabootstrapbundle.less' filter='less'
+            'css/main-style.css' filter='cssrewrite'
+        %}
+            <link href="{{ asset_url }}" type="text/css" rel="stylesheet" media="screen" />
+        {% endstylesheets %}
+    {% endblock head_style %}
+
+    {% block head_script %}
+        {% javascripts 'js/jquery.min.js' %}
+            <script type="text/javascript" src="{{ asset_url }}"></script>
+        {% endjavascripts %}
+    {% endblock head_script %}
+
+
+    
+    {% block head_bottom %}
+        <link rel="icon" type="image/png" href="ppp.ico">
+    {% endblock head_bottom %}
+    
+</head>
+{% endblock head %}
+
+
     <body>
-        {% block body %}{% endblock %}
-        {% block javascripts %}{% endblock %}
-    </body>
-</html>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                {% block content %}{% endblock %}
+                </div>
+            </div>
+        </div>
+                
+
+        {% block body_end_before_js %}
+        {% endblock body_end_before_js %}
+
+        {% block foot_script %}
+            {% block foot_script_assetic %}
+            {% javascripts
+                '@MopaBootstrapBundle/Resources/public/bootstrap/js/tooltip.js'
+                '@MopaBootstrapBundle/Resources/public/bootstrap/js/affix.js'
+                '@MopaBootstrapBundle/Resources/public/bootstrap/js/alert.js'
+                '@MopaBootstrapBundle/Resources/public/bootstrap/js/button.js'
+                '@MopaBootstrapBundle/Resources/public/bootstrap/js/carousel.js'
+                '@MopaBootstrapBundle/Resources/public/bootstrap/js/collapse.js'
+                '@MopaBootstrapBundle/Resources/public/bootstrap/js/dropdown.js'
+                '@MopaBootstrapBundle/Resources/public/bootstrap/js/modal.js'
+                '@MopaBootstrapBundle/Resources/public/bootstrap/js/popover.js'
+                '@MopaBootstrapBundle/Resources/public/bootstrap/js/scrollspy.js'
+                '@MopaBootstrapBundle/Resources/public/bootstrap/js/tab.js'
+                '@MopaBootstrapBundle/Resources/public/bootstrap/js/transition.js'
+                '@MopaBootstrapBundle/Resources/public/js/mopabootstrap-collection.js'
+                '@MopaBootstrapBundle/Resources/public/js/mopabootstrap-subnav.js'
+            %}
+                <script type="text/javascript" src="{{ asset_url }}"></script>
+            {% endjavascripts %}
+            {% endblock foot_script_assetic %}
+
+            <script type="text/javascript">
+                $(document).ready(function () {
+                    $('[data-toggle="tooltip"]').tooltip();
+                    $('[data-toggle="popover"]').popover();
+                });
+            </script>
+            <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
+            <script src="{{ path('fos_js_routing_js', {"callback": "fos.Router.setData"}) }}"></script>
+        {% endblock foot_script %}
+
+    {% block body_end %}
+    {% endblock body_end %}
+        
+        
+        
+</body>
+</html>                
+             
