@@ -8,6 +8,7 @@ use Monolog\Logger;
 use CodigoAustral\MPCUtilsBundle\Service\ObservationsParser;
 use CodigoAustral\MPCUtilsBundle\Service\ParsedObservation;
 use CodigoAustral\MPCUtilsBundle\Service\ObservatoryParser;
+use CodigoAustral\MPCUtilsBundle\Entity\Observatory;
 
 class MpcResourcesService {
 
@@ -48,15 +49,24 @@ class MpcResourcesService {
      * @return type Array
      * @throws \Exception
      */
-    public function getObservations($observatoryCode) {
+    public function getObservations($observatoryCode, $overwrite=false, $startDate='1500-01-01', $endDate='2099-12-31') {
         
-        $targetFile=$this->downloadsFolder . DIRECTORY_SEPARATOR . "observations-{$observatoryCode}.dat";
+        
+        /* @var $observatory Observatory */
+        $observatory  = $this->om
+                ->getRepository('CodigoAustralMPCUtilsBundle:Observatory')->findOneByCode($observatoryCode);
+        
+        if($observatory==null) {
+            throw new \Exception('No such observatory');
+        }
+        
+        $targetFile=$this->downloadsFolder . DIRECTORY_SEPARATOR . "observations-{$observatory->getCode()}--{$startDate}--{$endDate}.dat";
         
         // this url will not be available until we query via web form (it is created on the fly...)
-        $url="http://www.minorplanetcenter.net/tmp/1500-01-01--2099-12-31--{$observatoryCode}.dat";
+        $url="http://www.minorplanetcenter.net/tmp/{$startDate}--{$endDate}--{$observatory->getCode()}.dat";
         
         // prime it...
-        @fopen("http://www.minorplanetcenter.net/db_search/show_by_date?utf8=%E2%9C%93&start_date=&end_date=&observatory_code={$observatoryCode}&obj_type=all", 'r');
+        @fopen("http://www.minorplanetcenter.net/db_search/show_by_date?utf8=%E2%9C%93&start_date={$startDate}&end_date={$endDate}&observatory_code={$observatory->getCode()}&obj_type=all", 'r');
         
         // now hit the url
         if(file_exists($targetFile)) {

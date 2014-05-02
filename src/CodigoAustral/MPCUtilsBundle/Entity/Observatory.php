@@ -59,6 +59,13 @@ class Observatory {
     private $sin;
 
     
+    /**
+     * @ORM\OneToMany(targetEntity="CodigoAustral\MPCUtilsBundle\Entity\ObservationStat", mappedBy="observatory", cascade={"persist"})
+     * @var ArrayCollection
+     */
+    private $observationStats;
+    
+    
     public function getId() {
         return $this->id;
     }
