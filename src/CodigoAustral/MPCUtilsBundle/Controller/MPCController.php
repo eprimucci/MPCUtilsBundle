@@ -27,13 +27,38 @@ class MPCController extends Controller {
      * @Template()
      */
     public function observatoryListAction() {
-        
-        return new \Symfony\Component\HttpFoundation\Response('Hello!' , 200);
+        $em    = $this->getDoctrine()->getManager();
+        $dql   = "SELECT o FROM CodigoAustralMPCUtilsBundle:Observatory o ORDER BY o.name";
+        $query = $em->createQuery($dql);
+
+        $paginator  = $this->get('knp_paginator');
+        $pagination = $paginator->paginate(
+            $query,
+            $this->get('request')->query->get('page', 1)/*page number*/,
+            20/*limit per page*/
+        );
+
+        // parameters to template
+        return array('pagination' => $pagination);
+
         
     }
     
 
-    
+    /**
+     * Lists all Inspectionforms for an Inspectable
+     *
+     * @Route("/observatory/{code}", name="mpc_obs_details")
+     * @Method("GET")
+     * @Template()
+     */
+    public function observatoryDetailsAction($code) {
+        
+        $observatory    = $this->getDoctrine()->getManager()
+                ->getRepository('CodigoAustralMPCUtilsBundle:Observatory')->findOneByCode($code);
+        return array('observatory'=>$observatory);
+        
+    }
 
     
 }
