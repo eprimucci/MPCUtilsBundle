@@ -2,6 +2,8 @@
 
 namespace CodigoAustral\MPCUtilsBundle\Service;
 
+use CodigoAustral\MPCUtilsBundle\Entity\Observation;
+
 /**
  * Description of ParsedObservation
  *
@@ -33,11 +35,11 @@ class ParsedObservation {
 
 
     public function getType() {
-        $type='?';
+        $type=Observation::UNKNOWN;
         
         // numbered minor planet?
-        if(is_numeric($this->minorPlanetNumber)) {
-            return 'MP';
+        if(trim($this->minorPlanetNumber)!='') {
+            return Observation::MINOR_PLANET;
         }
         
         // comet?
@@ -45,11 +47,11 @@ class ParsedObservation {
         // Column 5 contains `C' for a long-period comet, `P' for a short-period comet, `D' for a `defunct' comet, `X' 
         // for an uncertain comet or `A' for a minor planet given a cometary designation.
         switch($this->minorPlanetNumber) {
-            case 'C'; $type='CC'; break;
-            case 'P'; $type='CP'; break;
-            case 'D'; $type='CD'; break;
-            case 'X'; $type='CX'; break;
-            case 'A'; $type='CA'; break;
+            case 'C'; $type= Observation::COMET_LONG_PERIOD; break;
+            case 'P'; $type=Observation::COMET_SHORT_PERIOD; break;
+            case 'D'; $type=Observation::COMET_DEFUNCT; break;
+            case 'X'; $type=Observation::COMET_UNCERTAIN; break;
+            case 'A'; $type=Observation::COMET_NOW_MP; break;
         // what else could it be?
         /*    Columns     Format   Use
                 1            A1     Planet identifier
@@ -59,11 +61,11 @@ class ParsedObservation {
                13            X      Not used, must be blank
          * 
          */
-            case 'J'; $type='NATSAT-J-'.  substr($this->minorPlanetNumber, 1,3); break;
-            case 'S'; $type='NATSAT-S-'.  substr($this->minorPlanetNumber, 1,3); break;
-            case 'U'; $type='NATSAT-U-'.  substr($this->minorPlanetNumber, 1,3); break;
-            case 'N'; $type='NATSAT-N-'.  substr($this->minorPlanetNumber, 1,3); break;
-            default: $type='?';
+            case 'J'; $type=Observation::NATSAT_JUPITER.  substr($this->minorPlanetNumber, 1,3); break;
+            case 'S'; $type=Observation::NATSAT_SATURN.  substr($this->minorPlanetNumber, 1,3); break;
+            case 'U'; $type=Observation::NATSAT_URANUS.  substr($this->minorPlanetNumber, 1,3); break;
+            case 'N'; $type=Observation::NATSAT_NEPTUNE.  substr($this->minorPlanetNumber, 1,3); break;
+            default: $type=Observation::UNKNOWN;
         }
         if($type!='?') {
             return $type;
@@ -71,11 +73,8 @@ class ParsedObservation {
         
         // neo?
         if($this->minorPlanetNumber=='     ' && $this->temporaryDesignation!='') {
-            $type='UNEO';
+            $type=  Observation::NEO_NEW;
         }
-        
-        
-        
         
         
         return $type;
@@ -83,14 +82,27 @@ class ParsedObservation {
     
     
     
-    
+    /**
+     * Returns visual magnitude
+     * @return boolean
+     */
     public function getNumericMagnitude() {
         // mag = '          16.7 V' => 16.7
+        if($this->mag=='') {
+            return false;
+        }
         return abs(substr($this->mag, 10, 4));
     }
     
+    /**
+     * Filter or band
+     * @return boolean
+     */
     public function getBand() {
         // mag = '          16.7 V' => 'V'
+        if($this->mag=='') {
+            return false;
+        }
         return substr($this->mag, -1);
     }
     
@@ -106,6 +118,26 @@ class ParsedObservation {
     }
 
 
+    
+    public function getRAasFloat() {
+        // 10 02 12.21
+        $parts= explode(' ', $this->RA);
+        return round(($parts[0]*15)+($parts[1]/4)+($parts[2]/240),6);
+    }
+    
+    public function getDECasFloat() {
+        // -27 59 17.8
+        $parts= explode(' ', $this->DEC);
+        $d=abs($parts[0])+($parts[1]/60)+($parts[2]/3600);
+        if(substr($parts[0], 0, 1)=='-') {
+            $d=$d*-1;
+        }
+        return round($d,6);
+        
+    }
+    
+    
+    
     
     
     
@@ -192,6 +224,44 @@ class ParsedObservation {
         return $this;
     }
 
+
+    public function getDateTime() {
+        return $this->parseUT($this->dateObs);
+    }
+    
+    
+    /**
+     * Converts MPC date time format (decimal day) to PHP DateTime
+     * PHP does not know that UT != UTC, anyway 0.9 secs apart is fine!
+     * @param type $mpcDate
+     * @return \DateTime
+     */
+    private function parseUT($mpcDate) {
+        
+        // e.g. '2014 03 11.12548' is '2014-03-11 03:00:41'
+        
+        $year=  substr($mpcDate, 0,4);
+        $month = substr($mpcDate, 5,2);
+        $dayUT=  (float)substr($mpcDate, 8);
+        
+        $hoursUT=fmod($dayUT, 1);
+        $hours=$hoursUT*24;
+        
+        $minutes=fmod($hours, 1)*60;
+        $seconds=fmod($minutes, 1)*60;
+        
+        $dateString=
+                $year .'-'. 
+                $month . '-'. 
+                str_pad(intval($dayUT),2, '0', STR_PAD_LEFT) .' '.
+                str_pad(intval($hours),2, '0', STR_PAD_LEFT).':'.
+                str_pad(intval($minutes),2, '0', STR_PAD_LEFT).':'.
+                str_pad(number_format($seconds,6),2, '0', STR_PAD_LEFT);
+        
+        return new \DateTime($dateString.' UTC');
+        
+    }
+    
 
 
     

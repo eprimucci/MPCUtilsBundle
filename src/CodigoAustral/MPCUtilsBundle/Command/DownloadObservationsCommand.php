@@ -23,41 +23,37 @@ class DownloadObservationsCommand extends ContainerAwareCommand {
     }
     
 
-    private function parseUT($mpcDate) {
-        
-        // e.g. '2014 03 11.12548'
-        
-        $year=  substr($mpcDate, 0,4);
-        $month = substr($mpcDate, 5,2);
-        $resto=  substr($mpcDate, 8);
-        
-        
-        
-        
-    }
-    
-    
+
     protected function execute(InputInterface $input, OutputInterface $output) {
-        
-        $fecha='2014 03 11.12548';
-        
-        $d=new \DateTime($fecha);
-        
-        var_dump($d);
-        die();
-        
         
         // get the PHA web page from parameters file
         $code=$input->getArgument('code');
-        $start=$input->getArgument('start');
-        $end=$input->getArgument('end');
+        $startDate=$input->getArgument('start');
+        $endDate=$input->getArgument('end');
         $overwrite=$input->getOption('forcedownload');
+        
+        
+        $em=$this->getContainer()->get('doctrine.orm.entity_manager');
+        
+        /* @var $observatory Observatory */
+        $observatory  = $em->getRepository('CodigoAustralMPCUtilsBundle:Observatory')->findOneByCode($code);
+        
+        if($observatory==null) {
+            throw new \Exception('No such observatory');
+        }
         
         /* @var $service MpcResourcesService */
         $service=$this->getContainer()->get('mpcbundle.mpcresources');
         
         try {
-            $service->getObservations($code, $overwrite, $start, $end);
+            
+            // get the file if needed
+            $service->getObservations($observatory, $overwrite, $startDate, $endDate);
+            
+            // now load the observations
+            $targetFile=$service->buildObservationsLocalFilename($observatory, $startDate, $endDate);
+            
+            $service->parseAndLoadRawObservationsFile($observatory, $targetFile);
         }
         catch(\Exception $e) {
             $output->writeln($e->getMessage());

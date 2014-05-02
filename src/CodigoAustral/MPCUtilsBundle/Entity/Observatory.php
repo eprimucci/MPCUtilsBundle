@@ -3,6 +3,7 @@
 namespace CodigoAustral\MPCUtilsBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Cuenta
@@ -60,10 +61,10 @@ class Observatory {
 
     
     /**
-     * @ORM\OneToMany(targetEntity="CodigoAustral\MPCUtilsBundle\Entity\ObservationStat", mappedBy="observatory", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="CodigoAustral\MPCUtilsBundle\Entity\Observation", mappedBy="observatory", cascade={"persist"})
      * @var ArrayCollection
      */
-    private $observationStats;
+    private $observations;
     
     
     public function getId() {
@@ -124,6 +125,21 @@ class Observatory {
     public function __toString() {
         return $this->code.'-'.$this->name;
     }
+
+ 
+    public function getObservations() {
+        return $this->observations;
+    }
+
+    public function setObservations(ArrayCollection $observations) {
+        $this->observations = $observations;
+        return $this;
+    }
+    
+    public function addObservation(Observation $observation) {
+        $this->observations->add($observation);
+    }
+
 
     
 
