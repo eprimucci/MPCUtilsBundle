@@ -23,7 +23,29 @@ class DownloadObservationsCommand extends ContainerAwareCommand {
     }
     
 
+    private function parseUT($mpcDate) {
+        
+        // e.g. '2014 03 11.12548'
+        
+        $year=  substr($mpcDate, 0,4);
+        $month = substr($mpcDate, 5,2);
+        $resto=  substr($mpcDate, 8);
+        
+        
+        
+        
+    }
+    
+    
     protected function execute(InputInterface $input, OutputInterface $output) {
+        
+        $fecha='2014 03 11.12548';
+        
+        $d=new \DateTime($fecha);
+        
+        var_dump($d);
+        die();
+        
         
         // get the PHA web page from parameters file
         $code=$input->getArgument('code');
