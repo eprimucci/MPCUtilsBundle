@@ -3,13 +3,16 @@
 namespace CodigoAustral\MPCUtilsBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
 use CodigoAustral\MPCUtilsBundle\Entity\Observatory;
 
 /**
  * Resumen de observaciones para un periodo
  *
- * @ORM\Table(name="observation")
+ * @ORM\Table(name="observation" , 
+ *                          indexes={
+ *                              @ORM\Index(name="type_idx", columns={"obs_type"}),
+ *                              @ORM\Index(name="obsdate_idx", columns={"obs_datetime"})
+ *                          })
  * @ORM\Entity
  */
 class Observation {
@@ -124,7 +127,6 @@ class Observation {
 
     /**
      * @ORM\Column(type="datetime")
-     * @Gedmo\Timestampable(on="create")
      * @var \DateTime
      */
     protected $created;
