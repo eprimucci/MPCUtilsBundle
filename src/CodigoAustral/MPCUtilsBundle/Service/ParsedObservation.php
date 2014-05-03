@@ -46,7 +46,7 @@ class ParsedObservation {
         //ORBIT TYPE, col 5!
         // Column 5 contains `C' for a long-period comet, `P' for a short-period comet, `D' for a `defunct' comet, `X' 
         // for an uncertain comet or `A' for a minor planet given a cometary designation.
-        switch($this->minorPlanetNumber) {
+        switch(substr($this->minorPlanetNumber,1)) {
             case 'C'; $type= Observation::COMET_LONG_PERIOD; break;
             case 'P'; $type=Observation::COMET_SHORT_PERIOD; break;
             case 'D'; $type=Observation::COMET_DEFUNCT; break;
