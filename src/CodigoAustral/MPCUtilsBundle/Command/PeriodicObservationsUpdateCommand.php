@@ -6,9 +6,10 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Console\Input\ArrayInput;
 
 use CodigoAustral\MPCUtilsBundle\Entity\Observatory;
-use Symfony\Component\Console\Input\ArrayInput;
 
 class PeriodicObservationsUpdateCommand extends ContainerAwareCommand {
 
@@ -33,16 +34,30 @@ class PeriodicObservationsUpdateCommand extends ContainerAwareCommand {
         
         
         // get observatories:
+        /* @var $obs ArrayCollection */
         $obs = $em->getRepository('CodigoAustralMPCUtilsBundle:Observatory')
                 ->findAllObservatoryInDownloadQueue($today);
 
         
-        $requestedTimestamp=mktime(0, 0, 0, $today->format('M'), $today->format('j'), $today->format('Y'));
+        $requestedTimestamp=mktime(0, 0, 0, 
+                intval($today->format('M')), 
+                intval($today->format('j')), 
+                intval($today->format('Y')));
+        
+        if($obs==null) {
+            $this->getContainer()->get('logger')
+                        ->warn($this->getName().": No Observatories found for this batch");
+            return;
+        }
+        
         
         /* @var $observatory Observatory */
         foreach($obs as $observatory) {
             
-            $lastObsTimestamp=mktime(0, 0, 0, $observatory->getLastObsDownload()->format('M'), $observatory->getLastObsDownload()->format('j'), $observatory->getLastObsDownload()->format('Y'));
+            $lastObsTimestamp=mktime(0, 0, 0, 
+                    intval($observatory->getLastObsDownload()->format('M')), 
+                    intval($observatory->getLastObsDownload()->format('j')), 
+                    intval($observatory->getLastObsDownload()->format('Y')));
             
             
             if($lastObsTimestamp>=$requestedTimestamp) {
@@ -59,15 +74,36 @@ class PeriodicObservationsUpdateCommand extends ContainerAwareCommand {
                 'end'=>$today->format('Y-m-d'),
                 '--forcedownload'=>false,
                 );
+            
+            $parserArguments = array(
+                'command' => 'mpc:observations:parse-and-load',
+                'code'=>$observatory->getCode(), 
+                'start'=>$observatory->getLastObsDownload()->format('Y-m-d'),
+                'end'=>$today->format('Y-m-d'),
+                );
+            
             $this->getContainer()->get('logger')->info($this->getName().": Processing {$observatory->getCode()} with ".  var_export($downloaderArguments, true));
+            $output->writeln(date('Y-m-d G:i:s', time())." Processing {$observatory->getCode()}");
             try {
-                $input = new ArrayInput($downloaderArguments);
-                $downloader->run($input, $output);
+                
+                // get the observations
+                $downloader->run(new ArrayInput($downloaderArguments), $output);
+                
+                // now parse and load them
+                $loader->run(new ArrayInput($parserArguments), $output);
+                
+                // update dates
+                $observatory->setLastObsDownload($today);
+                
                 $this->getContainer()->get('logger')->info($this->getName().": Successfully updated {$observatory->getCode()}");
+            
+                
             }
             catch (\Exception $e) {
                 $this->getContainer()->get('logger')->warn($this->getName().': '.$e->getMessage());
             }
+            
+            $em->flush();
         }
         
 

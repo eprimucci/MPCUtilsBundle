@@ -177,7 +177,7 @@ class MpcResourcesService {
             rename($targetFile, $this->trashcan . DIRECTORY_SEPARATOR . basename($targetFile));
         }
         
-        $observatory->setLastObsDownload($lastObsDownload);
+        //$observatory->setLastObsDownload($lastObsDownload);
         $this->om->flush();
         $this->logger->info("Loaded {$obs} observations for Observatory {$observatory->getCode()}");
         
