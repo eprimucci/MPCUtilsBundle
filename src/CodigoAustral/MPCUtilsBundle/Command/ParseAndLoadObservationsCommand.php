@@ -6,19 +6,18 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Input\InputOption;
+
 
 use CodigoAustral\MPCUtilsBundle\Service\MpcResourcesService;
 
-class DownloadObservationsCommand extends ContainerAwareCommand {
+class ParseAndLoadObservationsCommand extends ContainerAwareCommand {
 
     protected function configure() {
-        $this->setName('mpc:observations:download')
-            ->setDescription('Downloads submitted observations and stores on local file')
+        $this->setName('mpc:observations:parse-and-load')
+            ->setDescription('Parses and load into local DB selected the Observations')
             ->addArgument('code', InputArgument::REQUIRED, 'MPC Code')
             ->addArgument('start', InputArgument::REQUIRED, 'Start date YYYY-MM-DD')
             ->addArgument('end', InputArgument::REQUIRED, 'End date YYYY-MM-DD')
-            ->addOption('forcedownload', null, InputOption::VALUE_NONE, 'If set, the file will be downloaded even if already present on disk.')
         ;
     }
     
@@ -26,11 +25,9 @@ class DownloadObservationsCommand extends ContainerAwareCommand {
 
     protected function execute(InputInterface $input, OutputInterface $output) {
         
-        // get the PHA web page from parameters file
         $code=$input->getArgument('code');
         $startDate=$input->getArgument('start');
         $endDate=$input->getArgument('end');
-        $overwrite=$input->getOption('forcedownload');
         
         
         $em=$this->getContainer()->get('doctrine.orm.entity_manager');
@@ -47,9 +44,10 @@ class DownloadObservationsCommand extends ContainerAwareCommand {
         
         try {
             
-            // get the file if needed
-            $service->getObservations($observatory, $overwrite, $startDate, $endDate);
+            // now load the observations
+            $targetFile=$service->buildObservationsLocalFilename($observatory, $startDate, $endDate);
             
+            $service->parseAndLoadRawObservationsFile($observatory, $targetFile);
         }
         catch(\Exception $e) {
             $output->writeln($e->getMessage());

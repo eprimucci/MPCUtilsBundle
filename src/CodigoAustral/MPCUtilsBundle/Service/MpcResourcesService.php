@@ -66,7 +66,7 @@ class MpcResourcesService {
                 $this->logger->warn("Zero byte local data file: {$targetFile}");
                 return;
             }
-            $this->logger->info("Read {$bytesRead} bytes from local resource {$targetFile}");
+            $this->logger->info("Observations file is {$bytesRead} long at {$targetFile}");
         }
         else {
             // this url will not be available until we query via web form (it is created on the fly...)
