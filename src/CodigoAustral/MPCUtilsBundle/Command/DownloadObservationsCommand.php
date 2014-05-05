@@ -45,15 +45,20 @@ class DownloadObservationsCommand extends ContainerAwareCommand {
         /* @var $service MpcResourcesService */
         $service=$this->getContainer()->get('mpcbundle.mpcresources');
         
+        $haveFile=false;
+        
         try {
             
             $file=$service->getObservations($observatory, $overwrite, $startDate, $endDate);
             $this->getContainer()->get('logger')->info($this->getName().' '."Resource on disk now: {$file}");
+            $haveFile=true;
             
         }
         catch(\Exception $e) {
             $output->writeln($e->getMessage());
         }
+        
+        return $haveFile;
         
     }
 

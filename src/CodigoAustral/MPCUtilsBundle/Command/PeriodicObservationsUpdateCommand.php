@@ -87,15 +87,18 @@ class PeriodicObservationsUpdateCommand extends ContainerAwareCommand {
             try {
                 
                 // get the observations
-                $downloader->run(new ArrayInput($downloaderArguments), $output);
+                $haveFile=$downloader->run(new ArrayInput($downloaderArguments), $output);
                 
-                // now parse and load them
-                $loader->run(new ArrayInput($parserArguments), $output);
+                if($haveFile) {
+                    // now parse and load them
+                    $loader->run(new ArrayInput($parserArguments), $output);
+
+                    // update dates
+                    $observatory->setLastObsDownload($today);
+                    $this->getContainer()->get('logger')->info($this->getName().": Successfully updated {$observatory->getCode()}");
+                }
                 
-                // update dates
-                $observatory->setLastObsDownload($today);
                 
-                $this->getContainer()->get('logger')->info($this->getName().": Successfully updated {$observatory->getCode()}");
             
                 
             }
