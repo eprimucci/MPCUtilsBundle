@@ -4,6 +4,7 @@ namespace CodigoAustral\MPCUtilsBundle\Service;
 
 use CodigoAustral\MPCUtilsBundle\Service\Parseable;
 use CodigoAustral\MPCUtilsBundle\Service\ParsedObservation;
+use CodigoAustral\MPCUtilsBundle\Entity\Observation;
 
 /**
  * Description of ObservationsParser
@@ -18,12 +19,7 @@ class ObservationsParser implements Parseable {
  * 
  * @see http://www.minorplanetcenter.net/iau/info/OpticalObs.html
  * 
-   Columns     Format   Use
-    1 -  5       A5     Minor planet number
-    6 - 12       A7     Provisional or temporary designation
-   13            A1     Discovery asterisk
  * 
-
           1         2         3         4         5         6         7         8        9
 012345678901234567890123456789012345678901234567890123456789012345678901234567890123456790
 |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| 
@@ -33,9 +29,7 @@ class ObservationsParser implements Parseable {
 |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| 
          1         2         3         4         5         6         7         8        9
 12345678901234567890123456789012345678901234567890123456789012345678901234567890123456790
-
 */
-  
   
     /**
      * 
@@ -46,17 +40,69 @@ class ObservationsParser implements Parseable {
 
         
         $p = new ParsedObservation();
+        $type=  Observation::UNKNOWN;
         
-        
-        /* NUMBER
-         * Columns 1-5 contain a zero-padded, right-justified number--e.g., an observation of (1) 
-         * would be given as 00001, an observation of (3202) would be 03202. If there is no number these columns must 
-         * be blank. Six-digit numbers are to be stored in packed form (A0000 = 100000), in order to be consistent 
-         * with the format specifier earlier in this document.
-         */
         $p->setMinorPlanetNumber(substr($line, 0, 5));
 
-        
+        if(in_array(substr($p->getMinorPlanetNumber(),-1), array('C','P','D','X','A'))) {
+            /* COMET
+            ORBIT TYPE, col 5!
+            Column 5 contains `C' for a long-period comet, `P' for a short-period comet, `D' for a `defunct' comet, `X' 
+            for an uncertain comet or `A' for a minor planet given a cometary designation.
+               Columns     Format   Use
+                1 -  4       I4     Periodic comet number
+                5            A1     Letter indicating type of orbit
+                6 - 12       A7     Provisional or temporary designation
+               13            X      Not used, must be blank
+             * 
+             */
+            switch(substr($p->getMinorPlanetNumber(),-1)) {
+                case 'C'; $type=Observation::COMET_LONG_PERIOD; break;
+                case 'P'; $type=Observation::COMET_SHORT_PERIOD; break;
+                case 'D'; $type=Observation::COMET_DEFUNCT; break;
+                case 'X'; $type=Observation::COMET_UNCERTAIN; break;
+                case 'A'; $type=Observation::COMET_NOW_MP; break;
+            }
+        }
+        else {
+            // MP or NATSAT
+            if(in_array(substr($p->getMinorPlanetNumber(),0,1), array('J','S','U','N'))) {
+                /**
+                 * NATURAL SATELLITES
+                 *    Columns     Format   Use
+                        1            A1     Planet identifier
+                        2 -  4       I3     Satellite number
+                        5            A1     "S"
+                        6 - 12       A7     Provisional or temporary designation
+                       13            X      Not used, must be blank
+                 */
+                switch(substr($p->getMinorPlanetNumber(),0,1)) {
+                    case 'J'; $type=Observation::NATSAT_JUPITER.  substr($p->getMinorPlanetNumber(), 1,3); break;
+                    case 'S'; $type=Observation::NATSAT_SATURN.  substr($p->getMinorPlanetNumber(), 1,3); break;
+                    case 'U'; $type=Observation::NATSAT_URANUS.  substr($p->getMinorPlanetNumber(), 1,3); break;
+                    case 'N'; $type=Observation::NATSAT_NEPTUNE.  substr($p->getMinorPlanetNumber(), 1,3); break;
+                }
+                /**
+                PROVISIONAL DESIGNATION
+                Columns 6-12 contain a packed version of the provisional designation. The first two digits of the year are packed into a 
+                 * single character in column 6 (I = 18, J = 19, K = 20). Columns 7-8 contain the last two 
+                 * digits of the year. Column 9 contains the half-month letter. Columns 10-11 contain the order within the 
+                 * half-month. Column 12 will be normally be `0', except for split comets, when the fragment designation is stored there as 
+                 * a lower-case letter.                
+                 */
+                
+            }
+            else {
+                /**
+                 *    Columns     Format   Use
+                        1 -  5       A5     Minor planet number
+                        6 - 12       A7     Provisional or temporary designation
+                       13            A1     Discovery asterisk
+                 */
+                $type=  Observation::MINOR_PLANET;
+            }
+        }
+
         /* PROVISIONAL/TEMPORARY DESIGNATION
          * Columns 6-12 contain the provisional designation or the temporary designation. The provisional designation is 
          * stored in a 7-character packed form. Temporary designations are designations assigned by the observer for new or 
@@ -66,6 +112,12 @@ class ObservationsParser implements Parseable {
          * is used for all observations of the same object.
          */
         $p->setTemporaryDesignation(substr($line, 5, 7));
+        
+        
+        // neo? type change...
+        if($p->getMinorPlanetNumber()=='     ' && $p->getTemporaryDesignation()!='') {
+            $type=  Observation::NEO_NEW;
+        }        
         
         
         // DISCOVERY ASTERISK
@@ -122,6 +174,8 @@ class ObservationsParser implements Parseable {
         $p->setExtra(substr($line, 71,6));
         
         // rules to identify object type
+        
+        $p->setType($type);
         
         return $p;
         

@@ -32,56 +32,9 @@ class ParsedObservation {
     protected $obscode;
     
     protected $extra;
+    protected $type;
 
 
-    public function getType() {
-        $type=Observation::UNKNOWN;
-        
-        // numbered minor planet?
-        if(trim($this->minorPlanetNumber)!='') {
-            return Observation::MINOR_PLANET;
-        }
-        
-        // comet?
-        //ORBIT TYPE, col 5!
-        // Column 5 contains `C' for a long-period comet, `P' for a short-period comet, `D' for a `defunct' comet, `X' 
-        // for an uncertain comet or `A' for a minor planet given a cometary designation.
-        switch(substr($this->minorPlanetNumber,1)) {
-            case 'C'; $type= Observation::COMET_LONG_PERIOD; break;
-            case 'P'; $type=Observation::COMET_SHORT_PERIOD; break;
-            case 'D'; $type=Observation::COMET_DEFUNCT; break;
-            case 'X'; $type=Observation::COMET_UNCERTAIN; break;
-            case 'A'; $type=Observation::COMET_NOW_MP; break;
-        // what else could it be?
-        /*    Columns     Format   Use
-                1            A1     Planet identifier
-                2 -  4       I3     Satellite number
-                5            A1     "S"
-                6 - 12       A7     Provisional or temporary designation
-               13            X      Not used, must be blank
-         * 
-         */
-            case 'J'; $type=Observation::NATSAT_JUPITER.  substr($this->minorPlanetNumber, 1,3); break;
-            case 'S'; $type=Observation::NATSAT_SATURN.  substr($this->minorPlanetNumber, 1,3); break;
-            case 'U'; $type=Observation::NATSAT_URANUS.  substr($this->minorPlanetNumber, 1,3); break;
-            case 'N'; $type=Observation::NATSAT_NEPTUNE.  substr($this->minorPlanetNumber, 1,3); break;
-            default: $type=Observation::UNKNOWN;
-        }
-        if($type!='?') {
-            return $type;
-        }
-        
-        // neo?
-        if($this->minorPlanetNumber=='     ' && $this->temporaryDesignation!='') {
-            $type=  Observation::NEO_NEW;
-        }
-        
-        
-        return $type;
-    }
-    
-    
-    
     /**
      * Returns visual magnitude
      * @return boolean
@@ -264,7 +217,16 @@ class ParsedObservation {
     
 
 
-    
+    public function getType() {
+        return $this->type;
+    }
+
+    public function setType($type) {
+        $this->type = $type;
+        return $this;
+    }
+
+
     
     
 }
