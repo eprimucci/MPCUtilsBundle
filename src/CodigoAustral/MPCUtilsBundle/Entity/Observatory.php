@@ -67,6 +67,21 @@ class Observatory {
     private $observations;
     
     
+    /**
+     * @ORM\Column(name="obs_last_download", type="datetime", nullable=true)
+     * @var \DateTime
+     */
+    protected $lastObsDownload;
+    
+    
+    /**
+     * @ORM\Column(name="download_priority", type="integer", nullable=false)
+     */
+    protected $downloadPriority;
+    
+    
+    
+    
     public function getId() {
         return $this->id;
     }
