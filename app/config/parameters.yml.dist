@@ -15,4 +15,6 @@ parameters:
     secret:            ThisTokenIsNotSoSecretChangeIt
 
     mpc.downloads-folder: /home/piri/projects/MPCUtilsBundle/downloaded-resources
+    mpc.downloads-trashcan: /home/piri/projects/MPCUtilsBundle/trashcan
     mpc.pha-long.url: http://www.minorplanetcenter.net/iau/lists/PHACloseApp.html
+

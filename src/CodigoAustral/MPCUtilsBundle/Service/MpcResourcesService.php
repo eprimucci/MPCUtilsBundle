@@ -28,15 +28,17 @@ class MpcResourcesService {
     
     protected $downloadsFolder;
     
+    protected $trashcan;
     
     protected $mpcPHAurl;
     
 
-    function __construct(ObjectManager $om, Logger $logger, $downloadsFolder, $mpcPHAurl) {
+    function __construct(ObjectManager $om, Logger $logger, $downloadsFolder, $mpcPHAurl, $trashcan) {
         $this->om = $om;
         $this->logger = $logger;
         $this->downloadsFolder = $downloadsFolder;
         $this->mpcPHAurl = $mpcPHAurl;
+        $this->trashcan = $trashcan;
     }
 
 
@@ -64,7 +66,7 @@ class MpcResourcesService {
             $bytesRead = filesize($targetFile);
             if($bytesRead==0) {
                 $this->logger->warn("Zero byte local data file: {$targetFile}");
-                return;
+                throw new \Exception("Zero byte local data file: {$targetFile}");
             }
             $this->logger->info("Observations file is {$bytesRead} long at {$targetFile}");
         }
@@ -79,7 +81,7 @@ class MpcResourcesService {
             
             if($remoteFileHandle===false) {
                 $this->logger->warn("No online data form {$observatory->getCode()} dates {$startDate}-{$endDate}");
-                return;
+                throw new \Exception("No online data form {$observatory->getCode()} dates {$startDate}-{$endDate}");
             }
             $bytesRead = file_put_contents($targetFile, $remoteFileHandle);
             if($bytesRead===false) {
@@ -143,7 +145,7 @@ class MpcResourcesService {
         $handle = @fopen($targetFile, "r");
         if($handle===false) {
             $this->logger->warn("Unable to open {$targetFile}");
-            return false;
+            throw new \Exception("Unable to open {$targetFile}");
         }
         
         $parser=new ObservationsParser();
@@ -172,9 +174,10 @@ class MpcResourcesService {
         fclose($handle);
         
         if($discardFile) {
-            rename($targetFile, "/tmp");
+            rename($targetFile, $this->trashcan . DIRECTORY_SEPARATOR . basename($targetFile));
         }
         
+        $observatory->setLastObsDownload($lastObsDownload);
         $this->om->flush();
         $this->logger->info("Loaded {$obs} observations for Observatory {$observatory->getCode()}");
         

@@ -56,10 +56,11 @@ class ParseAndLoadObservationsCommand extends ContainerAwareCommand {
             
             // now load the observations
             $targetFile=$service->buildObservationsLocalFilename($observatory, $startDate, $endDate);
-            
             $service->parseAndLoadRawObservationsFile($observatory, $targetFile);
+            
         }
         catch(\Exception $e) {
+            $this->getContainer()->get('logger')->error($this->getName().' '.$e->getMessage());
             $output->writeln($e->getMessage());
         }
         

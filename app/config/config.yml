@@ -99,7 +99,7 @@ services:
 
     mpcbundle.mpcresources:    
         class: CodigoAustral\MPCUtilsBundle\Service\MpcResourcesService
-        arguments: ["@doctrine.orm.entity_manager", "@logger", "%mpc.downloads-folder%", "%mpc.pha-long.url%"]
+        arguments: ["@doctrine.orm.entity_manager", "@logger", "%mpc.downloads-folder%", "%mpc.pha-long.url%", "%mpc.downloads-trashcan%"]
 
 
 

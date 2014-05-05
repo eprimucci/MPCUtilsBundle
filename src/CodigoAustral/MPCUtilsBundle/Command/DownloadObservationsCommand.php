@@ -47,8 +47,8 @@ class DownloadObservationsCommand extends ContainerAwareCommand {
         
         try {
             
-            // get the file if needed
-            $service->getObservations($observatory, $overwrite, $startDate, $endDate);
+            $file=$service->getObservations($observatory, $overwrite, $startDate, $endDate);
+            $this->getContainer()->get('logger')->info($this->getName().' '."Resource on disk now: {$file}");
             
         }
         catch(\Exception $e) {

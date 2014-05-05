@@ -24,4 +24,17 @@ class ObservatoryRepository extends EntityRepository {
                 ->getSingleResult();
     }
 
+    
+    public function findAllObservatoryInDownloadQueue($date) {
+        
+        
+        return $this->createQueryBuilder('o')
+                ->where('o.lastObsDownload < :date')
+                ->andWhere('o.downloadPriority >= 0')
+                ->setParameter('date', $date)
+                ->orderBy('o.lastObsDownload, o.downloadPriority')
+                ->getQuery()
+                ->getResult();
+    }
+    
 }
