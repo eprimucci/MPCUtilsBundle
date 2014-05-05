@@ -172,7 +172,7 @@ class MpcResourcesService {
         fclose($handle);
         
         if($discardFile) {
-            
+            rename($targetFile, "/tmp");
         }
         
         $this->om->flush();
