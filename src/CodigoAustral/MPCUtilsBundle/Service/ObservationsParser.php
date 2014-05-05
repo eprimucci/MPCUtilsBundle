@@ -114,12 +114,6 @@ class ObservationsParser implements Parseable {
         $p->setTemporaryDesignation(substr($line, 5, 7));
         
         
-        // neo? type change...
-        if($p->getMinorPlanetNumber()=='     ' && $p->getTemporaryDesignation()!='') {
-            $type=  Observation::NEO_NEW;
-        }        
-        
-        
         // DISCOVERY ASTERISK
         // Discovery observations for new (or unidentified) objects should contain `*' in column 13. Only one asterisked observation 
         // per object is expected.
