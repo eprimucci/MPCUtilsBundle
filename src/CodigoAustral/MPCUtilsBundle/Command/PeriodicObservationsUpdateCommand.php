@@ -6,7 +6,6 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Console\Input\ArrayInput;
 
 use CodigoAustral\MPCUtilsBundle\Entity\Observatory;
@@ -23,7 +22,7 @@ class PeriodicObservationsUpdateCommand extends ContainerAwareCommand {
 
     protected function execute(InputInterface $input, OutputInterface $output) {
         
-        $today=new \DateTime($input->getArgument('today'));
+        $endDate=new \DateTime($input->getArgument('today'));
         
         $em=$this->getContainer()->get('doctrine.orm.entity_manager');
         
@@ -34,15 +33,14 @@ class PeriodicObservationsUpdateCommand extends ContainerAwareCommand {
         
         
         // get observatories:
-        /* @var $obs ArrayCollection */
         $obs = $em->getRepository('CodigoAustralMPCUtilsBundle:Observatory')
-                ->findAllObservatoryInDownloadQueue($today);
+                ->findAllObservatoryInDownloadQueue($endDate);
 
         
         $requestedTimestamp=mktime(0, 0, 0, 
-                intval($today->format('M')), 
-                intval($today->format('j')), 
-                intval($today->format('Y')));
+                intval($endDate->format('M')), 
+                intval($endDate->format('j')), 
+                intval($endDate->format('Y')));
         
         if($obs==null) {
             $this->getContainer()->get('logger')
@@ -59,10 +57,13 @@ class PeriodicObservationsUpdateCommand extends ContainerAwareCommand {
                     intval($observatory->getLastObsDownload()->format('j')), 
                     intval($observatory->getLastObsDownload()->format('Y')));
             
+            $nextDay = clone $observatory->getLastObsDownload();
+            $nextDay->modify('+1 day');
             
             if($lastObsTimestamp>=$requestedTimestamp) {
                 $this->getContainer()->get('logger')
-                        ->warn($this->getName().": {$observatory->getCode()} already has info for {$today->format('Y-m-d')}. Last obs: {$observatory->getLastObsDownload()->format('Y-m-d')}");
+                        ->warn($this->getName().": {$observatory->getCode()} already has info for {$endDate->format('Y-m-d')}. Last obs: {$observatory->getLastObsDownload()->format('Y-m-d')}");
+                $output->writeln(date('Y-m-d G:i:s', time())." {$observatory->getCode()} already has info for {$endDate->format('Y-m-d')}. Last obs: {$observatory->getLastObsDownload()->format('Y-m-d')}");
                 continue;
             }
             
@@ -70,16 +71,16 @@ class PeriodicObservationsUpdateCommand extends ContainerAwareCommand {
             $downloaderArguments = array(
                 'command' => 'mpc:observations:download',
                 'code'=>$observatory->getCode(), 
-                'start'=>$observatory->getLastObsDownload()->format('Y-m-d'),
-                'end'=>$today->format('Y-m-d'),
+                'start'=>$nextDay->format('Y-m-d'),
+                'end'=>$endDate->format('Y-m-d'),
                 '--forcedownload'=>false,
                 );
             
             $parserArguments = array(
                 'command' => 'mpc:observations:parse-and-load',
                 'code'=>$observatory->getCode(), 
-                'start'=>$observatory->getLastObsDownload()->format('Y-m-d'),
-                'end'=>$today->format('Y-m-d'),
+                'start'=>$nextDay->format('Y-m-d'),
+                'end'=>$endDate->format('Y-m-d'),
                 );
             
             $this->getContainer()->get('logger')->info($this->getName().": Processing {$observatory->getCode()} with ".  var_export($downloaderArguments, true));
@@ -94,7 +95,7 @@ class PeriodicObservationsUpdateCommand extends ContainerAwareCommand {
                     $loader->run(new ArrayInput($parserArguments), $output);
 
                     // update dates
-                    $observatory->setLastObsDownload($today);
+                    $observatory->setLastObsDownload($endDate);
                     $this->getContainer()->get('logger')->info($this->getName().": Successfully updated {$observatory->getCode()}");
                 }
                 
