@@ -14,7 +14,7 @@ use CodigoAustral\MPCUtilsBundle\Service\MpcResourcesService;
 class ImportObservatoriesCommand extends ContainerAwareCommand {
 
     protected function configure() {
-        $this->setName('mpc:download:observatories')
+        $this->setName('mpc:observatories:download')
                 ->setDescription('Imports observatories from the list published by MPC. Only for new installs!');
     }
 
@@ -53,10 +53,12 @@ class ImportObservatoriesCommand extends ContainerAwareCommand {
             foreach($observatories as $obs) {
                 $o=new Observatory();
                 $o->setCode($obs['code']);
-                $o->setCos($obs['cos']);
-                $o->setLongitude($obs['long']);
+                $o->setCos(round($obs['cos'],6));
+                $o->setLongitude(round($obs['long'],6));
                 $o->setName($obs['name']);
-                $o->setSin($obs['sin']);
+                $o->setSin(round($obs['sin'],6));
+                $o->setDownloadPriority(-1);
+                $o->setLastObsDownload(new \DateTime('1500-01-01'));
                 $em->persist($o);
             }
             

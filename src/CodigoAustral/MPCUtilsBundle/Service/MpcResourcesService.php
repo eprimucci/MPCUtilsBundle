@@ -195,6 +195,8 @@ class MpcResourcesService {
         
         $url='http://www.minorplanetcenter.net/iau/lists/ObsCodes.html';
 
+        $this->logger->info("Trying to download observatories from {$url} into {$targetFile}");
+        
         if(file_exists($targetFile)) {
             $bytesRead = filesize($targetFile);
             $this->logger->info("Read {$bytesRead} bytes from local resource {$targetFile}");
@@ -222,8 +224,13 @@ class MpcResourcesService {
                     continue;
                 }
                 
-                $obs[]=$parser->parseLine($line);
-
+                $parsedLine=$parser->parseLine($line);
+                if($parsedLine['code']==null || $parsedLine['long']==null) {
+                    $this->logger->warn("Unexpected values while parsing observatory file: ".  var_export($parsedLine, true));
+                }
+                else {
+                    $obs[]=$parser->parseLine($line);
+                }
             }
             $this->logger->info('Parsed '.count($obs).' records.');
         } 
