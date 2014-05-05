@@ -138,7 +138,7 @@ class MpcResourcesService {
     
     
     
-    public function parseAndLoadRawObservationsFile(Observatory $observatory, $targetFile) {
+    public function parseAndLoadRawObservationsFile(Observatory $observatory, $targetFile, $discardFile=true) {
         // now parse it according to MPC instructions:
         $handle = @fopen($targetFile, "r");
         if($handle===false) {
@@ -170,6 +170,10 @@ class MpcResourcesService {
             
         }
         fclose($handle);
+        
+        if($discardFile) {
+            
+        }
         
         $this->om->flush();
         $this->logger->info("Loaded {$obs} observations for Observatory {$observatory->getCode()}");

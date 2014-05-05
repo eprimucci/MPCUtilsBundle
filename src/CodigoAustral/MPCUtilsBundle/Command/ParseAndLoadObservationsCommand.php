@@ -7,7 +7,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-
+use CodigoAustral\MPCUtilsBundle\Entity\Observatory;
 use CodigoAustral\MPCUtilsBundle\Service\MpcResourcesService;
 
 class ParseAndLoadObservationsCommand extends ContainerAwareCommand {
@@ -32,11 +32,21 @@ class ParseAndLoadObservationsCommand extends ContainerAwareCommand {
         
         $em=$this->getContainer()->get('doctrine.orm.entity_manager');
         
-        /* @var $observatory Observatory */
-        $observatory  = $em->getRepository('CodigoAustralMPCUtilsBundle:Observatory')->findOneByCode($code);
         
-        if($observatory==null) {
-            throw new \Exception('No such observatory');
+        if($code=='NEXTINLINE') {
+            // lets get the next Observatory in the queue
+            /* @var $observatory Observatory */
+            $observatory  = $em->getRepository('CodigoAustralMPCUtilsBundle:Observatory')->findFirstObservatoryInDownloadQueue($endDate);
+            if($observatory==null) {
+                throw new \Exception('Unable to get next Observatory in line');
+            }
+        }
+        else {
+            /* @var $observatory Observatory */
+            $observatory  = $em->getRepository('CodigoAustralMPCUtilsBundle:Observatory')->findOneByCode($code);
+            if($observatory==null) {
+                throw new \Exception('No such observatory');
+            }
         }
         
         /* @var $service MpcResourcesService */

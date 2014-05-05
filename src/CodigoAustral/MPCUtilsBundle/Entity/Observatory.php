@@ -6,10 +6,9 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * Cuenta
- *
+ * 
+ * @ORM\Entity(repositoryClass="CodigoAustral\MPCUtilsBundle\Repository\ObservatoryRepository")
  * @ORM\Table(name="observatory")
- * @ORM\Entity
  */
 class Observatory {
     
