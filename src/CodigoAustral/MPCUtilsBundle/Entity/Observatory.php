@@ -156,6 +156,24 @@ class Observatory {
     }
 
 
-    
+    public function getLastObsDownload() {
+        return $this->lastObsDownload;
+    }
+
+    public function setLastObsDownload(\DateTime $lastObsDownload) {
+        $this->lastObsDownload = $lastObsDownload;
+        return $this;
+    }
+
+    public function getDownloadPriority() {
+        return $this->downloadPriority;
+    }
+
+    public function setDownloadPriority($downloadPriority) {
+        $this->downloadPriority = $downloadPriority;
+        return $this;
+    }
+
+
 
 }
