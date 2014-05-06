@@ -56,6 +56,9 @@ class MPCController extends Controller {
         
         $observatory    = $this->getDoctrine()->getManager()
                 ->getRepository('CodigoAustralMPCUtilsBundle:Observatory')->findOneByCode($code);
+        
+        
+        
         return array('observatory'=>$observatory);
         
     }
